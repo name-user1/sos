@@ -72,11 +72,7 @@ export default function Home() {
   async function denem(){
     console.log(client)
     if (client) {
-      Object.keys(client).forEach(keyo => {
-        console.log(keyo)
-      })
-      // eslint-disable-next-line
-      const res = await client?.queryClient.wasm.getAllContractState('juno137ja66awdmqv2j95073llsslafv58knjkle90yw6934k02r58unscvzy89')
+      const res = await client["queryClient"].wasm.getAllContractState('juno137ja66awdmqv2j95073llsslafv58knjkle90yw6934k02r58unscvzy89')
       let keyo = ""
       let valo = ""
       Object.keys(res.models[0].key).forEach(nn => {
