@@ -71,19 +71,22 @@ export default function Home() {
 
   async function denem(){
     console.log(client)
-    Object.keys(client).forEach(keyo => {
-      console.log(keyo)
-    })
-    const res = await client?.queryClient.wasm.getAllContractState('juno137ja66awdmqv2j95073llsslafv58knjkle90yw6934k02r58unscvzy89')
-    let keyo = ""
-    let valo = ""
-    Object.keys(res.models[0].key).forEach(nn => {
-      keyo += String.fromCharCode(res.models[0].key[nn])
-    })
-    Object.keys(res.models[0].value).forEach(nn => {
-      valo += String.fromCharCode(res.models[0].value[nn])
-    })
-    console.log(keyo, valo, res)
+    if (client) {
+      Object.keys(client).forEach(keyo => {
+        console.log(keyo)
+      })
+      // eslint-disable-next-line
+      const res = await client?.queryClient.wasm.getAllContractState('juno137ja66awdmqv2j95073llsslafv58knjkle90yw6934k02r58unscvzy89')
+      let keyo = ""
+      let valo = ""
+      Object.keys(res.models[0].key).forEach(nn => {
+        keyo += String.fromCharCode(res.models[0].key[nn])
+      })
+      Object.keys(res.models[0].value).forEach(nn => {
+        valo += String.fromCharCode(res.models[0].value[nn])
+      })
+      console.log(keyo, valo, res)
+    }
   }
 
   async function conqur(){
