@@ -2,10 +2,10 @@ import React from "react";
 
 export interface ListProps {
     address: string,
-    sira: string
+    sira: number
 }
   
-function List({ address, sira }: ListProps) {
+function States({ address, sira }: ListProps) {
     return (
         <div
             style={{
@@ -22,4 +22,4 @@ function List({ address, sira }: ListProps) {
     );
 }
   
-export default List;
+export default States;

@@ -132,7 +132,7 @@ export default function NetworkListBox( { client }: NetworkListBoxProps ) {
               </h1>
               {contractList.map((address: string, index: number) => {
               return <List key={index} 
-                  address={address} sira={index + 1} />;
+                  address={address} sira={(index + 1).toString()} />;
               })}
             </div>
             <button onClick={() => setIsOpen(false)}>Cancel</button>

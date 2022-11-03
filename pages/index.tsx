@@ -6,6 +6,7 @@ import NetworkListBox from '../components/NetworkListBox'
 import { Contract, CosmWasmClient, GasPrice, SigningCosmWasmClient } from 'cosmwasm'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWallet } from '../contexts/wallet'
+import List from '../components/List'
 //import { useSignedOperation } from '../operations/signed'
 //import { usePublicOperation } from '../operations/public'
 
@@ -20,7 +21,8 @@ export default function Home() {
   const [contract, setContract] = useState<Contract>()
   const [rpcEndpoint, setRpcEndpoint] = useState("https://rpc.elgafar-1.stargaze-apis.com/") //"https://rpc-test.osmosis.zone/"//https://rpc.uni.juno.deuslabs.fi/
   const [contractQueryFunctions, setContractQueryFunctions] = useState('') 
-  const [contractExecuteFunctions, setContractExecuteFunctions] = useState('') 
+  const [contractExecuteFunctions, setContractExecuteFunctions] = useState('')
+  const [contractStates, setContractStates] = useState<{ keyo: string; valo: string; }[]>() 
   const msg = {
       z:""
   };
@@ -28,7 +30,7 @@ export default function Home() {
   //const pubOps = useMemo(() => publicOps?.use(), [publicOps, rpcEndpoint])
 
   async function getClients() {
-    const res = await CosmWasmClient.connect('https://rpc.uni.juno.deuslabs.fi/')
+    const res = await CosmWasmClient.connect(rpcEndpoint)
     setClient(res)
     const signer = await wallet.getSigner()
     const reso = await SigningCosmWasmClient.connectWithSigner(rpcEndpoint, signer, {
@@ -56,7 +58,6 @@ export default function Home() {
       else
         await signingClient?.execute(wallet.address, contract ? contract.address : contractAddress, msg, 'auto')
     } catch (error: any) {
-      console.log(error)
       const ilk = error.toString().split('expected')
       const ikinci = ilk[1].split(": query")
       donen = ikinci[0].split(',')
@@ -69,25 +70,25 @@ export default function Home() {
       setContract(await client?.getContract(contractAddressRef.current?.value))
   }
 
-  async function denem(){
-    console.log(client)
-    if (client) {
-      const res = await client["queryClient"].wasm.getAllContractState('juno137ja66awdmqv2j95073llsslafv58knjkle90yw6934k02r58unscvzy89')
-      let keyo = ""
-      let valo = ""
-      Object.keys(res.models[0].key).forEach(nn => {
-        keyo += String.fromCharCode(res.models[0].key[nn])
-      })
-      Object.keys(res.models[0].value).forEach(nn => {
-        valo += String.fromCharCode(res.models[0].value[nn])
-      })
-      console.log(keyo, valo, res)
-    }
-  }
-
   async function conqur(){
     setContractQueryFunctions(await errToObject(true))
     setContractExecuteFunctions(await errToObject(false))
+    if (client) {
+      const res = await client["queryClient"].wasm.getAllContractState(contract ? contract.address : contractAddress)
+      const son = []
+      for (let i = 0; i < res.models.length; i++){
+        let keyo = ""
+        let valo = ""
+        Object.keys(res.models[i].key).forEach(nn => {
+          keyo += String.fromCharCode(res.models[i].key[nn])
+        })
+        Object.keys(res.models[i].value).forEach(nn => {
+          valo += String.fromCharCode(res.models[i].value[nn])
+        })
+        son.push({keyo, valo})
+      }
+      setContractStates(son)
+    }
   }
 
   return (
@@ -112,7 +113,7 @@ export default function Home() {
         <div className={styles.grid}>
           <span> Contract Address:</span>
           <input ref={contractAddressRef} ></input>
-          <button onClick={denem} >GO</button>
+          <button onClick={con} >GO</button>
         </div>
 
         <div className="flex flex-col">
@@ -121,6 +122,10 @@ export default function Home() {
           <span>code Id: {contract?.codeId}</span>
           <span>ibc Port Id:{contract?.ibcPortId}</span>
           <span>label: {contract?.label}</span>
+          {contractStates?.map((value: {keyo: string, valo: string}, index: number) => {
+              return <List key={index} 
+                  address={value.valo} sira={value.keyo} />;
+              })}
         </div>
 
         <div className={styles.grid}>
