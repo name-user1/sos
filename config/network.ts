@@ -28,6 +28,7 @@ export interface NetworkListItem {
   chainName: string
   addressPrefix: string
   rpcUrl: string
+  httpUrl: string | undefined
   feeToken: string
   stakingToken: string
   coinMap: CoinMap
@@ -41,6 +42,7 @@ export const NETWORK_LIST: NetworkListItem[] = [
     chainName: 'Stargaze',
     addressPrefix: 'stars',
     rpcUrl: 'https://rpc.stargaze-apis.com/',
+    httpUrl: undefined,
     feeToken: 'ustars',
     stakingToken: 'ustars',
     coinMap: {
@@ -58,6 +60,7 @@ export const NETWORK_LIST: NetworkListItem[] = [
     chainName: 'elgafar-1',
     addressPrefix: 'stars',
     rpcUrl: 'https://rpc.elgafar-1.stargaze-apis.com/',
+    httpUrl: undefined,
     feeToken: 'ustars',
     stakingToken: 'ustars',
     coinMap: {
@@ -75,6 +78,7 @@ export const NETWORK_LIST: NetworkListItem[] = [
     chainName: 'Juno',
     addressPrefix: 'juno',
     rpcUrl: 'https://rpc.juno-1.deuslabs.fi',
+    httpUrl: undefined,
     feeToken: 'ujuno',
     stakingToken: 'ujuno',
     coinMap: {
@@ -92,6 +96,7 @@ export const NETWORK_LIST: NetworkListItem[] = [
     chainName: 'Uni',
     addressPrefix: 'juno',
     rpcUrl: 'https://rpc.uni.juno.deuslabs.fi',
+    httpUrl: undefined,
     feeToken: 'ujunox',
     stakingToken: 'ujunox',
     coinMap: {
@@ -109,6 +114,7 @@ export const NETWORK_LIST: NetworkListItem[] = [
     chainName: 'Osmosis',
     addressPrefix: 'osmo',
     rpcUrl: 'https://rpc-test.osmosis.zone/',
+    httpUrl: undefined,
     feeToken: 'ujunox',
     stakingToken: 'ujunox',
     coinMap: {
@@ -128,6 +134,7 @@ export const useSelectedChain = create<NetworkListItem>(() => ({
   chainName: 'Uni',
   addressPrefix: 'juno',
   rpcUrl: 'https://rpc.uni.juno.deuslabs.fi',
+  httpUrl: undefined,
   feeToken: 'ujunox',
   stakingToken: 'ujunox',
   coinMap: {
