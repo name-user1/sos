@@ -1,21 +1,16 @@
 import { useState, Fragment, useEffect, useRef } from 'react'
 import { Dialog, Listbox, Tab } from '@headlessui/react'
 import { CosmWasmClient } from 'cosmwasm'
+import { NETWORK_LIST, useSelectedChain } from '../config'
 import List from './List'
+import { useWalletStore } from '../contexts/wallet'
 
 export interface NetworkListBoxProps {
   client: CosmWasmClient | undefined
 }
 
-const networks = [
-  { id: 'juno', name: 'Juno' },
-  { id: 'stargs', name: 'Stargaze' },
-  { id: 'osmo', name: 'Osmosis' },
-  { id: 'atom', name: 'Cosmos' },
-]
-
 export default function NetworkListBox( { client }: NetworkListBoxProps ) {
-  const [selectedNetwork, setSelectedNetwork] = useState(networks[0])
+  const selectedNetwork = useSelectedChain()
   const [isOpen, setIsOpen] = useState(false)
   const [contractList, setContractList] = useState<string[]>([])
 
@@ -47,57 +42,29 @@ export default function NetworkListBox( { client }: NetworkListBoxProps ) {
               Get started by choosing network:
             </span>
             <div>
-              <Listbox value={selectedNetwork} onChange={setSelectedNetwork}>
-                <Listbox.Button>{selectedNetwork.name}</Listbox.Button>
+              <Listbox value={selectedNetwork} onChange={(value) => {
+                useSelectedChain.setState(value, true)
+                useWalletStore.getState().setConfig(value)
+                }}>
+                <Listbox.Button>{selectedNetwork.chainName}</Listbox.Button>
                 <Listbox.Options>
-                  {networks.map((network) => (
+                  {NETWORK_LIST.map((network) => (
                     /* Use the `active` state to conditionally style the active option. */
                     /* Use the `selected` state to conditionally style the selected option. */
-                    <Listbox.Option key={network.id} value={network} as={Fragment}>
+                    <Listbox.Option key={network.chainName} value={network} as={Fragment}>
                       {({ active, selected }) => (
                         <li
                           className={`${
                             active ? 'bg-blue-500 text-white' : 'bg-white text-black'
                           }`}
                         >
-                          {network.name}
+                          {network.chainName}
                         </li>
                       )}
                     </Listbox.Option>
                   ))}
                 </Listbox.Options>
               </Listbox>
-            </div>
-            <div>
-              <Tab.Group>
-                <Tab.List>
-                  <Tab as={Fragment}>
-                    {({ selected }) => (
-                      /* Use the `selected` state to conditionally style the selected tab. */
-                      <button
-                        className={
-                          selected ? 'bg-blue-500 text-white' : 'bg-white text-black'
-                        }
-                      >
-                        Testnet
-                      </button>
-                    )}
-                  </Tab>
-                  <Tab as={Fragment}>
-                    {({ selected }) => (
-                      /* Use the `selected` state to conditionally style the selected tab. */
-                      <button
-                        className={
-                          selected ? 'bg-blue-500 text-white' : 'bg-white text-black'
-                        }
-                      >
-                        Mainnet
-                      </button>
-                    )}
-                  </Tab>
-                  {/* ...  */}
-                </Tab.List>
-              </Tab.Group>
             </div>
             <div>
               <button onClick={() => setIsOpen(true)}>Find Your Contract</button>

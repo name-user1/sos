@@ -7,6 +7,7 @@ import { Contract, CosmWasmClient, GasPrice, SigningCosmWasmClient } from 'cosmw
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWallet } from '../contexts/wallet'
 import List from '../components/List'
+import { useSelectedChain } from '../config'
 //import { useSignedOperation } from '../operations/signed'
 //import { usePublicOperation } from '../operations/public'
 
@@ -14,12 +15,12 @@ export default function Home() {
   //const signedOps = useSignedOperation()
   //const publicOps = usePublicOperation()
   const wallet = useWallet()
+  const chain = useSelectedChain()
   
   const [client, setClient] = useState<CosmWasmClient>()
   const [signingClient, setSigningClient] = useState<SigningCosmWasmClient>()
   const [contractAddress, setContractAddress] = useState("juno137ja66awdmqv2j95073llsslafv58knjkle90yw6934k02r58unscvzy89")
   const [contract, setContract] = useState<Contract>()
-  const [rpcEndpoint, setRpcEndpoint] = useState("https://rpc.elgafar-1.stargaze-apis.com/") //"https://rpc-test.osmosis.zone/"//https://rpc.uni.juno.deuslabs.fi/
   const [contractQueryFunctions, setContractQueryFunctions] = useState('') 
   const [contractExecuteFunctions, setContractExecuteFunctions] = useState('')
   const [contractStates, setContractStates] = useState<{ keyo: string; valo: string; }[]>() 
@@ -30,10 +31,10 @@ export default function Home() {
   //const pubOps = useMemo(() => publicOps?.use(), [publicOps, rpcEndpoint])
 
   async function getClients() {
-    const res = await CosmWasmClient.connect(rpcEndpoint)
+    const res = await CosmWasmClient.connect(chain.rpcUrl)
     setClient(res)
     const signer = await wallet.getSigner()
-    const reso = await SigningCosmWasmClient.connectWithSigner(rpcEndpoint, signer, {
+    const reso = await SigningCosmWasmClient.connectWithSigner(chain.rpcUrl, signer, {
       prefix: "juno",
       gasPrice: GasPrice.fromString("0.0025ujunox"),
     })
@@ -42,7 +43,7 @@ export default function Home() {
 
   useEffect(() => {
     getClients()
-  }, [rpcEndpoint])
+  }, [chain])
 
   const contractAddressRef = useRef<null | HTMLInputElement>(null);
 
@@ -54,9 +55,9 @@ export default function Home() {
     let donen = ""
     try{
       if (gon)
-        await client?.queryContractSmart(contract ? contract.address : contractAddress, msg)
+        await client?.queryContractSmart(contract?.address || contractAddress, msg)
       else
-        await signingClient?.execute(wallet.address, contract ? contract.address : contractAddress, msg, 'auto')
+        await signingClient?.execute(wallet.address, contract?.address || contractAddress, msg, 'auto')
     } catch (error: any) {
       const ilk = error.toString().split('expected')
       const ikinci = ilk[1].split(": query")
@@ -74,7 +75,7 @@ export default function Home() {
     setContractQueryFunctions(await errToObject(true))
     setContractExecuteFunctions(await errToObject(false))
     if (client) {
-      const res = await client["queryClient"].wasm.getAllContractState(contract ? contract.address : contractAddress)
+      const res = await client["queryClient"].wasm.getAllContractState(contract?.address || contractAddress)
       const son = []
       for (let i = 0; i < res.models.length; i++){
         let keyo = ""

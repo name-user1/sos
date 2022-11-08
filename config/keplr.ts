@@ -1,6 +1,6 @@
 import type { ChainInfo } from '@keplr-wallet/types'
 
-import type { AppConfig } from './app'
+import type { NetworkListItem } from './network'
 
 export interface KeplrCoin {
   readonly coinDenom: string
@@ -33,7 +33,7 @@ export interface KeplrConfig {
   readonly coinType: number
 }
 
-export const keplrConfig = (config: AppConfig): ChainInfo => ({
+export const keplrConfig = (config: NetworkListItem): ChainInfo => ({
   chainId: config.chainId,
   chainName: config.chainName,
   rpc: config.rpcUrl,

@@ -1,6 +1,5 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import type { AppConfig } from '../config'
-import { getConfig, keplrConfig } from '../config'
+import { NetworkListItem, useSelectedChain } from '../config'
 import { toast } from 'react-hot-toast'
 import { createTrackedSelector } from 'react-tracked'
 import { NETWORK } from '../utils/constants'
@@ -9,7 +8,7 @@ import { subscribeWithSelector } from 'zustand/middleware'
 
 export interface PublicOperationStore {
   client: CosmWasmClient | undefined
-  config: AppConfig
+  config: NetworkListItem
   initialized: boolean
   initializing: boolean
   name: string
@@ -35,7 +34,7 @@ export type PublicOperationType = PublicOperationStore
  */
 const defaultStates = {
   client: undefined,
-  config: getConfig(NETWORK),
+  config: useSelectedChain(),
   initialized: false,
   initializing: true,
   name: '',

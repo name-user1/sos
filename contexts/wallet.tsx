@@ -2,13 +2,12 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Decimal } from '@cosmjs/math'
 import type { OfflineSigner } from '@cosmjs/proto-signing'
 import type { Coin } from '@cosmjs/stargate'
-import type { AppConfig } from '../config'
-import { getConfig, keplrConfig } from '../config'
+import { NetworkListItem, NETWORK_LIST } from '../config'
+import { keplrConfig } from '../config'
 import type { ReactNode } from 'react'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { createTrackedSelector } from 'react-tracked'
-import { NETWORK } from '../utils/constants'
 import create from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 
@@ -17,11 +16,10 @@ export interface KeplrWalletStore {
   address: string
   balance: Coin[]
   client: SigningCosmWasmClient | undefined
-  config: AppConfig
+  config: NetworkListItem
   initialized: boolean
   initializing: boolean
   name: string
-  network: string
   signer: OfflineSigner | undefined
 
   readonly clear: () => void
@@ -37,7 +35,7 @@ export interface KeplrWalletStore {
 
   readonly refreshBalance: (address?: string, balance?: Coin[]) => Promise<void>
 
-  readonly setNetwork: (network: string) => void
+  readonly setConfig: (config: NetworkListItem) => void
 
   readonly updateSigner: (singer: OfflineSigner) => void
 
@@ -59,11 +57,10 @@ const defaultStates = {
   address: '',
   balance: [],
   client: undefined,
-  config: getConfig(NETWORK),
+  config: NETWORK_LIST[3],
   initialized: false,
   initializing: true,
   name: '',
-  network: NETWORK,
   signer: undefined,
 }
 
@@ -105,7 +102,11 @@ export const useWalletStore = create(
       }
       set({ balance })
     },
-    setNetwork: (network) => set({ network }),
+    setConfig: (config) => {
+      set({ config })
+      const { connect } = get()
+      connect()
+    },
     updateSigner: (signer) => set({ signer }),
     setQueryClient: async () => {
       try {
@@ -271,7 +272,7 @@ const createQueryClient = () => {
  *
  * @param config - Application configuration
  */
-const loadKeplrWallet = async (config: AppConfig) => {
+const loadKeplrWallet = async (config: NetworkListItem) => {
   if (!window.getOfflineSigner || !window.keplr || !window.getOfflineSignerAuto) {
     throw new Error('Keplr extension is not available')
   }
